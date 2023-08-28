@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectFit;
 using ProjectFit.Entities;
+using ProjectFit.Repositories;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,8 +75,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 var serviceProvider = builder.Services.BuildServiceProvider();
 //Check for logging.
-//var logger = serviceProvider.GetService<ILogger<>>(); 
-//builder.Services.AddSingleton(typeof(ILogger), logger);
+var logger = serviceProvider.GetService<ILogger<AccountRepository>>(); 
+builder.Services.AddSingleton(typeof(ILogger), logger);
 
 var app = builder.Build();
 
