@@ -15,7 +15,7 @@ namespace ProjectFit.Entities
 
         [Required(ErrorMessage ="Please enter Mobile Number")]
         [Phone(ErrorMessage ="Please enter a valid mobile number")]
-        public long MobileNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage ="Please enter email")]
         [EmailAddress(ErrorMessage ="Enter a valid email")]
