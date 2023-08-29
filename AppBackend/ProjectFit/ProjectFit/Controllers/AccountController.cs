@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjectFit.Entities;
 using ProjectFit.Interfaces;
 
@@ -38,6 +39,32 @@ namespace ProjectFit.Controllers
             }
             return BadRequest("Failed to Login");
 
+        }
+
+        [HttpPost]
+        [Route("SignUpForCoach")]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> SignUpForCoach([FromBody] SignUp SignUpObj)
+        {
+            var result = await _accountRepository.SignUpForCoach(SignUpObj);
+            if(result.Succeeded)
+            {
+                return Ok("Coach Account Created");
+            }
+            return BadRequest("Failed to create coach account");
+        }
+
+        [HttpPost]
+        [Route("SignUpForAdmin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SignUpForAdmin([FromBody] SignUp SignUpObj)
+        {
+            var result = await _accountRepository.SignUpForAdmin(SignUpObj);
+            if(result.Succeeded)
+            {
+                return Ok("Admin Account created");
+            }
+            return BadRequest("Failed to create Admin Account");
         }
     }
 }

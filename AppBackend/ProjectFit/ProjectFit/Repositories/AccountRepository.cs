@@ -105,7 +105,77 @@ namespace ProjectFit.Repositories
             {
                 await _userManager.AddToRoleAsync(user,UserRole.Customer);
             }
-            _logger.LogInformation($"{DateTimeOffset.UtcNow} INFO: Registration completed for {SignUpObj.Email}");
+            _logger.LogInformation($"{DateTimeOffset.UtcNow} INFO: Registration completed for User {SignUpObj.Email}");
+            return IdentityResult.Success;
+
+        }
+        public async Task<IdentityResult> SignUpForCoach(SignUp SignUpObj)
+        {
+            var UserExists = await _userManager.FindByEmailAsync(SignUpObj.Email);
+            if (UserExists != null)
+            {
+                return IdentityResult.Failed();
+            }
+            User user = new()
+            {
+                Email = SignUpObj.Email,
+                UserName = SignUpObj.Email,
+                FirstName = SignUpObj.Firstname,
+                LastName = SignUpObj.Lastname,
+                CountryCode = SignUpObj.CountryCode,
+                PhoneNumber = SignUpObj.PhoneNumber,
+                SecurityStamp = Guid.NewGuid().ToString(),
+            };
+
+            var CreateUser = await _userManager.CreateAsync(user, SignUpObj.Password);
+            if (!CreateUser.Succeeded)
+            {
+                return IdentityResult.Failed();
+            }
+            if (!await _roleManager.RoleExistsAsync(UserRole.Coach))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRole.Coach));
+            }
+            if (await _roleManager.RoleExistsAsync(UserRole.Coach))
+            {
+                await _userManager.AddToRoleAsync(user, UserRole.Coach);
+            }
+            _logger.LogInformation($"{DateTimeOffset.UtcNow} INFO: Registration completed for Coach {SignUpObj.Email}");
+            return IdentityResult.Success;
+
+        }
+        public async Task<IdentityResult> SignUpForAdmin(SignUp SignUpObj)
+        {
+            var UserExists = await _userManager.FindByEmailAsync(SignUpObj.Email);
+            if (UserExists != null)
+            {
+                return IdentityResult.Failed();
+            }
+            User user = new()
+            {
+                Email = SignUpObj.Email,
+                UserName = SignUpObj.Email,
+                FirstName = SignUpObj.Firstname,
+                LastName = SignUpObj.Lastname,
+                CountryCode = SignUpObj.CountryCode,
+                PhoneNumber = SignUpObj.PhoneNumber,
+                SecurityStamp = Guid.NewGuid().ToString(),
+            };
+
+            var CreateUser = await _userManager.CreateAsync(user, SignUpObj.Password);
+            if (!CreateUser.Succeeded)
+            {
+                return IdentityResult.Failed();
+            }
+            if (!await _roleManager.RoleExistsAsync(UserRole.Admin))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRole.Admin));
+            }
+            if (await _roleManager.RoleExistsAsync(UserRole.Admin))
+            {
+                await _userManager.AddToRoleAsync(user, UserRole.Admin);
+            }
+            _logger.LogInformation($"{DateTimeOffset.UtcNow} INFO: Registration completed for Admin {SignUpObj.Email}");
             return IdentityResult.Success;
 
         }

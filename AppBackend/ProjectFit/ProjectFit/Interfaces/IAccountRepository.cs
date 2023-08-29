@@ -7,5 +7,8 @@ namespace ProjectFit.Interfaces
     {
         Task<IdentityResult> SignUp(SignUp SignUpObj);
         Task<string> SignIn(SignIn SignInObj);
+        Task<IdentityResult> SignUpForCoach(SignUp SignUpObj);
+        Task<IdentityResult> SignUpForAdmin(SignUp SignUpObj);
+
     }
 }
