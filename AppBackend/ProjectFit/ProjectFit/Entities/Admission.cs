@@ -19,7 +19,8 @@ namespace ProjectFit.Entities
         public string Email { get; set; }
         [Required]
         public string Status { get; set; }
-        public string FeedBack { get; set; }
+        public string PlanFeedBack { get; set; }
+        public string CoachFeedback { get; set; }
         public Coaches Coaches { get; set; }
         public Plans Plans { get; set; }
         public User User { get; set; }

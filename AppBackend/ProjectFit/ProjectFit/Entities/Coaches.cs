@@ -13,7 +13,11 @@ namespace ProjectFit.Entities
         [Required]
         public string CoachEmail { get; set;}
         [Required]
+        public int CountryCode { get; set;}
+        [Required]
+        [Phone]
         public string CoachPhone { get; set;}
+        public string CoachRating { get; set;}
 
     }
 }

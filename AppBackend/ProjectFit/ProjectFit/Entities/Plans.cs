@@ -15,6 +15,7 @@ namespace ProjectFit.Entities
         [Required]
         public string PlanType { get; set; }
         public int PlanPrice { get; set; }
+        public string PlanRating { get; set; }
 
     }
 }
