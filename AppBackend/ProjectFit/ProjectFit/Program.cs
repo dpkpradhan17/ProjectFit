@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectFit;
 using ProjectFit.Entities;
+using ProjectFit.Interfaces;
 using ProjectFit.Repositories;
 using System.Text;
 
@@ -22,6 +23,7 @@ builder.Services.AddDbContext<ProjectFitContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlCon")));
 
 builder.Services.AddTransient<ProjectFitContext>();
+builder.Services.AddTransient<IAccountRepository, AccountRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

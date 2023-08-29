@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using ProjectFit.Entities;
 using ProjectFit.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ProjectFit.Repositories
 {
@@ -25,9 +29,49 @@ namespace ProjectFit.Repositories
             _logger = logger;
         }
 
-        public Task<string> SignIn(SignIn SignInObj)
+        public async Task<string> SignIn(SignIn SignInObj)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(SignInObj.Email);
+            if (user == null)
+            {
+                _logger.LogWarning($"{DateTimeOffset.UtcNow} WAR : SignIn failed : {SignInObj.Email}");
+                return "Incorrect Email/Password";
+            }
+            if(!await _userManager.CheckPasswordAsync(user, SignInObj.Password))
+            {
+                _logger.LogWarning($"{DateTimeOffset.UtcNow} WAR : SignIn failed : {SignInObj.Email}");
+                return "Incorrect Email/Password";
+            }
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+            };
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+            string token = GenerateToken(authClaims);
+            _logger.LogInformation($"{DateTimeOffset.UtcNow} INFO: SignIn success {SignInObj.Email}");
+            return token;
+
+        }
+        private string GenerateToken(IEnumerable<Claim> claims)
+        {
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Issuer = _configuration["JWT:ValidIssuer"],
+                Audience = _configuration["JWT:ValidAudience"],
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
+                Subject = new ClaimsIdentity(claims)
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
 
         public async Task<IdentityResult> SignUp(SignUp SignUpObj)
